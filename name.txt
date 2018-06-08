@@ -1,0 +1,19 @@
+    PIC (Position-Independent Code) 位置无关代码
+    共享库的一个主要目地是允许多个正在运行的进程共享内存中相同的库代码，节约资源。要实现上述的效果，就要求库代码可以加载到内存的任何位置而无需链接器修改。所以这样的代码称作位置无关代码。
+
+    GOT (Global Offset Table) 全局偏移量表
+    无论在内存的何处加载一个目标模块（包括共享目标模块），数据段与代码段的距离总保持不变，因此，代码段张宏任何指令和数据段中任何变量之间的距离都是一个运行时常量，与代码段和数据段的绝对内存位置无关。
+    编译器利用这个事实生成对全局变量PIC的引用，它在数据段开始的地方创建了一个表，叫做全局偏移量表。在GOT中，每个被当前目标模块引用的全局数据（过程或全局变量）都有一个8字节条目，加载时动态连接器重定位GOT中每个条目，使得他们包含目标的正确地址。引用全局目标的目标模块都有自己的GOT。
+
+    PLT (Procedure Linkage Table) 过程连接表
+
+    RELRO (Relocation Read Only) 重定向只读
+    在Linux系统安全领域数据可以写的存储区就会是攻击的目标，尤其是存储函数指针的区域，尽量减少可写的存储区可使安全系数提高。GCC， GNU linker 以及 Glibc-dynamic linker 一起配合实现了一种叫做relro 的技术Relocation Read Only, 重定向只读，实现就是由 linker 指定binary 的一块经过dynamic linker 处理过relocation 之后的区域为只读。
+
+    Stack 栈溢出检查, 用Canary 金丝雀值是否变化来检测，Canary found表示开启
+
+    NX:No Execute, 栈不可执行，也就是windows上的DEP
+    DEP的基本原理是将数据所在内存页标识为不可执行，当程序溢出成功转入shelcode时，程序会尝试在数据也面上执行指令，此时CPU就会抛出异常，而不是去执行恶意指令。DEP的主要作用是阻止数据页（入默认的堆页，各种堆栈页，一级内存池页）执行代码。硬件DEP需要CPU的支持，AMD和intel都为此做了设计，AMD称之为No-Execute Page-Protection (NX), intel 称之为Execute Disable Bit(XD)
+
+    PIE (position-independent executables) 位置无关的可执行文件，即ASLR(Adress space layout randomization) 地址随机化， 程序每次启动基址都随机
+
